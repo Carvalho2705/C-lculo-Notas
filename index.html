@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cálculo de Notas e Faltas</title>
+<style>
+  /* Fundo animado */
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    color: #fff;
+    background: linear-gradient(-45deg, #007bff, #6610f2, #00b4d8, #48cae4);
+    background-size: 400% 400%;
+    animation: gradient 12s ease infinite;
+  }
+
+  @keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  h1, h2 {
+    text-align: center;
+    margin-top: 10px;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+    animation: brilho 3s infinite alternate;
+  }
+
+  @keyframes brilho {
+    from { color: #fff; }
+    to { color: #d4f1ff; }
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 40px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  }
+
+  th, td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+  }
+
+  th {
+    background: rgba(0,0,0,0.3);
+    font-weight: 600;
+  }
+
+  tr:hover {
+    background: rgba(255,255,255,0.1);
+  }
+
+  input[type="number"] {
+    width: 80px;
+    padding: 5px;
+    border-radius: 6px;
+    border: none;
+    text-align: center;
+    background: rgba(255,255,255,0.8);
+    color: #333;
+    font-weight: bold;
+  }
+
+  .btn {
+    display: block;
+    margin: 25px auto;
+    padding: 12px 25px;
+    font-size: 17px;
+    background: linear-gradient(45deg, #00b4d8, #007bff);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: 0.3s ease;
+  }
+
+  .btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+    background: linear-gradient(45deg, #0096c7, #023e8a);
+  }
+
+  .resultado {
+    font-weight: bold;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 14px;
+    color: #e0e0e0;
+    margin-top: 30px;
+    opacity: 0.8;
+  }
+</style>
+</head>
+<body>
+
+<h1>📘 Cálculo de Notas</h1>
+
+<table id="tabela">
+  <tr>
+    <th>Matéria</th>
+    <th>Nota 1</th>
+    <th>Nota 2</th>
+    <th>Nota 3</th>
+    <th>Nota 4</th>
+    <th>Resultado</th>
+  </tr>
+</table>
+
+<button class="btn" onclick="calcularNotas()">Calcular Resultados</button>
+
+<h2>📊 Controle de Faltas</h2>
+
+<table id="tabela-faltas">
+  <tr>
+    <th>Matéria</th>
+    <th>Carga Horária Total</th>
+    <th>Aulas Dadas</th>
+    <th>Faltas</th>
+    <th>Faltas Máximas (25%)</th>
+    <th>Faltas Restantes</th>
+  </tr>
+</table>
+
+<button class="btn" onclick="calcularFaltas()">Calcular Faltas</button>
+
+<footer>Desenvolvido por Gabriel • © 2025</footer>
+
+<script>
+  const materias = [
+    "Projeto Integrador", "Biologia", "Educação Física", "Filosofia",
+    "Física", "Fundamentos da Computação", "Geografia", "História",
+    "Inglês", "Português", "Matemática", "Programação",
+    "Química", "Redes de Computadores"
+  ];
+
+  const tabela = document.getElementById("tabela");
+  const tabelaFaltas = document.getElementById("tabela-faltas");
+
+  materias.forEach((materia, i) => {
+    const linha = tabela.insertRow();
+    linha.insertCell().innerText = materia;
+    for (let j = 0; j < 4; j++) {
+      const celula = linha.insertCell();
+      const input = document.createElement("input");
+      input.type = "number";
+      input.min = 0;
+      input.max = 10;
+      input.step = 0.1;
+      input.id = `nota-${i}-${j}`;
+      celula.appendChild(input);
+    }
+    const resultado = linha.insertCell();
+    resultado.id = `resultado-${i}`;
+    resultado.className = "resultado";
+  });
+
+  function calcularNotas() {
+    materias.forEach((materia, i) => {
+      let soma = 0;
+      for (let j = 0; j < 4; j++) {
+        const nota = parseFloat(document.getElementById(`nota-${i}-${j}`).value) || 0;
+        soma += nota;
+      }
+      const resultado = document.getElementById(`resultado-${i}`);
+      if (soma >= 24) {
+        resultado.style.color = "#9cff9c";
+        resultado.textContent = `Aprovado ✅ (Total: ${soma.toFixed(1)})`;
+      } else {
+        const falta = (24 - soma).toFixed(1);
+        resultado.style.color = "#ffb3b3";
+        resultado.textContent = `Faltam ${falta} pontos ❌ (Total: ${soma.toFixed(1)})`;
+      }
+    });
+  }
+
+  materias.forEach((materia, i) => {
+    const linha = tabelaFaltas.insertRow();
+    linha.insertCell().innerText = materia;
+
+    const carga = linha.insertCell();
+    const inputCarga = document.createElement("input");
+    inputCarga.type = "number";
+    inputCarga.min = 0;
+    inputCarga.id = `carga-${i}`;
+    carga.appendChild(inputCarga);
+
+    const dadas = linha.insertCell();
+    const inputDadas = document.createElement("input");
+    inputDadas.type = "number";
+    inputDadas.min = 0;
+    inputDadas.id = `dadas-${i}`;
+    dadas.appendChild(inputDadas);
+
+    const faltas = linha.insertCell();
+    const inputFaltas = document.createElement("input");
+    inputFaltas.type = "number";
+    inputFaltas.min = 0;
+    inputFaltas.id = `faltas-${i}`;
+    faltas.appendChild(inputFaltas);
+
+    const maximo = linha.insertCell();
+    maximo.id = `maximo-${i}`;
+    maximo.className = "resultado";
+
+    const restantes = linha.insertCell();
+    restantes.id = `restantes-${i}`;
+    restantes.className = "resultado";
+  });
+
+  function calcularFaltas() {
+    materias.forEach((materia, i) => {
+      const carga = parseFloat(document.getElementById(`carga-${i}`).value) || 0;
+      const faltas = parseFloat(document.getElementById(`faltas-${i}`).value) || 0;
+      const maxPermitidas = carga * 0.25;
+      const faltasRestantes = maxPermitidas - faltas;
+
+      const maximo = document.getElementById(`maximo-${i}`);
+      const restantes = document.getElementById(`restantes-${i}`);
+
+      maximo.textContent = maxPermitidas.toFixed(1);
+
+      if (faltasRestantes >= 0) {
+        restantes.style.color = "#9cff9c";
+        restantes.textContent = `${faltasRestantes.toFixed(1)} restantes ✅`;
+      } else {
+        restantes.style.color = "#ffb3b3";
+        restantes.textContent = "Limite excedido ❌";
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
